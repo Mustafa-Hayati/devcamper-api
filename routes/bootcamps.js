@@ -2,7 +2,8 @@ const express = require("express");
 
 const router = express.Router();
 
-/* CONTROLLERS */
+/* ANCHOR
+ CONTROLLERS */
 const {
   getBootcamps,
   getBootcamp,
