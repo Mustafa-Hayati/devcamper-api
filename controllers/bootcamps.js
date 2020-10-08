@@ -1,3 +1,6 @@
+// MODELS
+const Bootcamp = require("../models/Bootcamp");
+
 /*  ANCHOR
 @desc   Get all bootcamps
 @route  GET /api/v1/bootcamps
@@ -27,11 +30,21 @@ exports.getBootcamp = (req, res, next) => {
 @route  POST /api/v1/bootcamps/
 @access Private
 */
-exports.createBootcamp = (req, res, next) => {
-  res.status(200).json({
-    success: true,
-    msg: "Create a new bootcamp",
-  });
+exports.createBootcamp = async (req, res, next) => {
+  try {
+    // It's safe to add req.body directly to the model
+    // Because the schema will validate the input
+    const bootcamp = await Bootcamp.create(req.body);
+
+    res.status(201).json({
+      success: true,
+      data: bootcamp,
+    });
+  } catch (error) {
+    res.status(400).json({
+      success: false,
+    });
+  }
 };
 
 /*  ANCHOR

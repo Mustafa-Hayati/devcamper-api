@@ -16,6 +16,10 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 
+// Necessary Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Dev Loggin middleware
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
