@@ -1,12 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
-
-// ROUTES
-const bootcamps = require("./routes/bootcamps");
+const connectDB = require("./config/db");
 
 // LOAD ENV VARS
 dotenv.config({ path: "./config/config.env" });
+
+// CONNECT TO THE DATABASE
+connectDB();
+
+// ROUTES
+const bootcamps = require("./routes/bootcamps");
 
 const port = process.env.PORT || 5000;
 
@@ -20,8 +24,15 @@ if (process.env.NODE_ENV === "development") {
 // MOUNT ROUTERS
 app.use("/api/v1/bootcamps", bootcamps);
 
-app.listen(port, () =>
+const server = app.listen(port, () =>
   console.log(
     `Server is running in ${process.env.NODE_ENV} mode on port ${port}`
   )
 );
+
+// Handle unhandled promise rejections
+process.on("unhandledRejection", (err, promise) => {
+  console.log(`Error: ${err.message}`);
+  // close server and exit process
+  server.close(() => process.exit(1));
+});
