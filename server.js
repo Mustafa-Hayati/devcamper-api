@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const connectDB = require("./config/db");
+const errorHandler = require("./middlewares/error");
 
 // LOAD ENV VARS
 dotenv.config({ path: "./config/config.env" });
@@ -27,6 +28,10 @@ if (process.env.NODE_ENV === "development") {
 
 // MOUNT ROUTERS
 app.use("/api/v1/bootcamps", bootcamps);
+
+// ERROR HANDLING MIDDLEWARE
+// We should place this after routers
+app.use(errorHandler);
 
 const server = app.listen(port, () =>
   console.log(
