@@ -1,9 +1,34 @@
-const errorHandler = (err, req, res, next) => {
-  console.log(err.stack);
+const cloneDeep = require("clone-deep");
+const ErrorResponse = require("../utils/errorResponse");
 
-  res.status(500).json({
+const errorHandler = (err, req, res, next) => {
+  let error = cloneDeep(err);
+
+  console.log(err);
+
+  // Mongoose bad object ID
+  if (err.name === "CastError") {
+    const message = `Resource not found with id of ${err.value}`;
+    error = new ErrorResponse(message, 404);
+  }
+
+  // Mongoose Duplicate key
+  // You could use
+  //  err.name === "MongooseError" && err.code === 11000 too
+  if (err.code === 11000) {
+    const message = `Duplicate Field value entered`;
+    error = new ErrorResponse(message, 400);
+  }
+  // Mongoose validation error
+  if (err.name === "ValidationError") {
+    const message = Object.values(err.errors).map(val => val.message);
+
+    error = new ErrorResponse(message, 400);
+  }
+
+  res.status(error.statusCode || 500).json({
     success: false,
-    error: err.message,
+    error: error.message || "Server Error",
   });
 };
 
