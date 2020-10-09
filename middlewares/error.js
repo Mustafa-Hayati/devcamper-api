@@ -4,7 +4,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const errorHandler = (err, req, res, next) => {
   let error = cloneDeep(err);
 
-  console.log(err);
+  console.error(err);
 
   // Mongoose bad object ID
   if (err.name === "CastError") {

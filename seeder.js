@@ -1,0 +1,64 @@
+const fs = require("fs");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./config/config.env" });
+
+// LOAD MODELS
+const Bootcamp = require("./models/Bootcamp");
+
+// Connect to DB
+let DB;
+if (process.env.NODE_ENV === "production") {
+  // ! MongoDB Atlas
+  DB = process.env.DATABASE.replace(
+    "<PASSWORD>",
+    process.env.DATABASE_PASSWORD
+  );
+} else {
+  // ! Local Database
+  DB = process.env.DATABASE_LOCAL;
+}
+
+mongoose
+  .connect(DB, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("connected"));
+
+// READ JOSN FILES
+const bootcamps = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/Bootcamps.json`, "utf-8")
+);
+
+// Import into DB
+const importData = async () => {
+  try {
+    await Bootcamp.create(bootcamps);
+    console.log("Data imported");
+    process.exit();
+  } catch (error) {
+    console.error(err);
+  }
+};
+
+// Delete Data
+const deleteData = async () => {
+  try {
+    await Bootcamp.deleteMany();
+
+    console.log("Data Deleted");
+    process.exit();
+  } catch (error) {
+    console.error(err);
+  }
+};
+
+if (process.argv[2] === "-i") {
+  importData();
+} else if (process.argv[2] === "-d") {
+  deleteData();
+}
