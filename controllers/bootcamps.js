@@ -1,3 +1,4 @@
+const cloneDeep = require("clone-deep");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middlewares/asyncHandler");
 const geocoder = require("../utils/geocoder");
@@ -12,13 +13,40 @@ const Bootcamp = require("../models/Bootcamp");
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
   let query;
 
-  let queryString = JSON.stringify(req.query);
+  // copy rq.query
+  const reqQuery = cloneDeep(req.query);
+
+  // fields to exclude
+  const removeFields = ["select", "sort"];
+  removeFields.forEach(param => delete reqQuery[param]);
+
+  // create query string
+  let queryString = JSON.stringify(reqQuery);
+
+  // create operators like {$gt, $lte, etc}
   queryString = queryString.replace(
     /\b(gt|gte|lt|lte|in)\b/g,
     match => `$${match}`
   );
+
+  // finding resources
   query = Bootcamp.find(JSON.parse(queryString));
 
+  // select fields
+  if (req.query.select) {
+    const fields = req.query.select.split(",").join(" ");
+    query = query.select(fields);
+  }
+
+  // Sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(",").join(" ");
+    query = query.sort(sortBy);
+  } else {
+    query.sort("-createdAt");
+  }
+
+  // executing query
   const bootcamps = await query;
 
   res.status(200).json({
