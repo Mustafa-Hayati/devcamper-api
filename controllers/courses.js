@@ -111,13 +111,18 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 @access Private
 */
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findByIdAndDelete(req.params.id);
+  const course = await Course.findById(req.params.id);
 
   if (!course) {
     return next(
       new ErrorResponse(`Course not found with id of ${req.params.id}`, 404)
     );
   }
+
+  // we do this instead of findByIdAndDelete because of the
+  // middlewares (pre remove) that we are going to add
+  // to Course model, later.
+  await course.remove();
 
   res.status(204).json({});
 });
