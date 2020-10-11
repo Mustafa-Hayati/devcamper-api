@@ -20,8 +20,7 @@ const connectDB = async () => {
     useUnifiedTopology: true,
   });
 
-  console.log(`MongoDB: connected to Dev Camper DB!`);
-  console.log(`${conn.connection.host}`);
+  console.log(`✅ MongoDB: connected to Dev Camper DB!`);
 };
 
 module.exports = connectDB;
