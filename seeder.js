@@ -6,6 +6,7 @@ dotenv.config({ path: "./config/config.env" });
 
 // LOAD MODELS
 const Bootcamp = require("./models/Bootcamp");
+const Course = require("./models/Course");
 
 // Connect to DB
 let DB;
@@ -27,21 +28,25 @@ mongoose
     useFindAndModify: false,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("connected"));
+  .then(() => console.log("✅ connected"));
 
 // READ JOSN FILES
 const bootcamps = JSON.parse(
   fs.readFileSync(`${__dirname}/_data/Bootcamps.json`, "utf-8")
+);
+const courses = JSON.parse(
+  fs.readFileSync(`${__dirname}/_data/Courses.json`, "utf-8")
 );
 
 // Import into DB
 const importData = async () => {
   try {
     await Bootcamp.create(bootcamps);
-    console.log("Data imported");
+    await Course.create(courses);
+    console.log("✅ Data imported");
     process.exit();
   } catch (error) {
-    console.error(err);
+    console.error(`❌`, err);
   }
 };
 
@@ -49,11 +54,12 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Bootcamp.deleteMany();
+    await Course.deleteMany();
 
-    console.log("Data Deleted");
+    console.log("✅ Data Deleted");
     process.exit();
   } catch (error) {
-    console.error(err);
+    console.error(`❌`, err);
   }
 };
 
