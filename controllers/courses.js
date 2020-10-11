@@ -3,6 +3,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middlewares/asyncHandler");
 // MODELS
 const Course = require("../models/Course");
+const Bootcamp = require("../models/Bootcamp");
 
 /*  ANCHOR
 @desc   Get all courses
@@ -39,7 +40,10 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 @access Public
 */
 exports.getCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findById(req.params.id);
+  const course = await Course.findById(req.params.id).populate({
+    path: "bootcamp",
+    select: "name description",
+  });
 
   if (!course) {
     return next(
@@ -55,15 +59,24 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 
 /*  ANCHOR
 @desc   Create new course
-@route  POST /api/v1/courses/
+@route  POST /api/v1/bootcamps/:bootcampId/courses
 @access Private
 */
 exports.createCourse = asyncHandler(async (req, res, next) => {
-  // It's safe to add req.body directly to the model
-  // Because the schema will validate the input
+  req.body.bootcamp = req.params.bootcampId;
+
+  const bootcamp = await Bootcamp.findById(req.params.bootcampId);
+
+  if (!bootcamp) {
+    new ErrorResponse(
+      `No bootcamp with the id of ${req.params.bootcampId}`,
+      404
+    );
+  }
+
   const course = await Course.create(req.body);
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: course,
   });
