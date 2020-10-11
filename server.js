@@ -12,6 +12,7 @@ connectDB();
 
 // ROUTES
 const bootcamps = require("./routes/bootcamps");
+const courses = require("./routes/courses");
 
 const port = process.env.PORT || 5000;
 
@@ -28,6 +29,7 @@ if (process.env.NODE_ENV === "development") {
 
 // MOUNT ROUTERS
 app.use("/api/v1/bootcamps", bootcamps);
+app.use("/api/v1/courses", courses);
 
 // ERROR HANDLING MIDDLEWARE
 // We should place this after routers
