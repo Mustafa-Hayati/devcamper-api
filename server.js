@@ -1,6 +1,8 @@
+const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const fileupload = require("express-fileupload");
 const connectDB = require("./config/db");
 const errorHandler = require("./middlewares/error");
 
@@ -21,11 +23,16 @@ const app = express();
 // Necessary Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Set static folder
+app.use(express.static(path.join(__dirname, "public")));
 
 // Dev Loggin middleware
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+// File upload
+app.use(fileupload());
 
 // MOUNT ROUTERS
 app.use("/api/v1/bootcamps", bootcamps);
