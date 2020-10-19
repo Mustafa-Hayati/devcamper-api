@@ -2,6 +2,7 @@ const path = require("path");
 const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const fileupload = require("express-fileupload");
 const connectDB = require("./config/db");
 const errorHandler = require("./middlewares/error");
@@ -21,6 +22,9 @@ const port = process.env.PORT || 5000;
 
 const app = express();
 
+app.disable("x-powered-by");
+// app.set("x-powered-by", "me");
+
 // Necessary Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,6 +35,9 @@ app.use(express.static(path.join(__dirname, "public")));
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
+
+// Cookie Parser
+app.use(cookieParser());
 
 // File upload
 app.use(fileupload());
