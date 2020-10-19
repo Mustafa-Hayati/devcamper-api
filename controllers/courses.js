@@ -40,7 +40,10 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 
   if (!course) {
     return next(
-      new ErrorResponse(`Course not found with id of ${req.params.id}`, 404)
+      new ErrorResponse(
+        `Course not found with id of ${req.params.id}`,
+        404
+      )
     );
   }
 
@@ -81,14 +84,21 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
 @access Private
 */
 exports.updateCourse = asyncHandler(async (req, res, next) => {
-  const course = await Course.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  const course = await Course.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 
   if (!course) {
     return next(
-      new ErrorResponse(`Course not found with id of ${req.params.id}`, 404)
+      new ErrorResponse(
+        `Course not found with id of ${req.params.id}`,
+        404
+      )
     );
   }
 
@@ -108,7 +118,10 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
 
   if (!course) {
     return next(
-      new ErrorResponse(`Course not found with id of ${req.params.id}`, 404)
+      new ErrorResponse(
+        `Course not found with id of ${req.params.id}`,
+        404
+      )
     );
   }
 
@@ -117,7 +130,10 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
   // to Course model, later.
   await course.remove();
 
-  res.status(204).json({});
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
 });
 
 /*  ANCHOR
