@@ -3,6 +3,9 @@ const express = require("express");
 const dotenv = require("dotenv");
 const morgan = require("morgan");
 const helmet = require("helmet");
+const hpp = require("hpp");
+const cors = require("cors");
+const rateLimit = require("express-rate-limit");
 const xss = require("xss-clean");
 const mongoSanitize = require("express-mongo-sanitize");
 const cookieParser = require("cookie-parser");
@@ -52,6 +55,19 @@ app.use(helmet());
 
 // Prevent XSS attacks
 app.use(xss());
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 100,
+});
+app.use(limiter);
+
+// Prevent http param pollution
+app.use(hpp());
+
+// Enable CORS
+app.use(cors());
 
 // File upload
 app.use(fileupload());
