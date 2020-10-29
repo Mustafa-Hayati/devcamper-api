@@ -196,3 +196,57 @@ const sendTokenResponse = (user, statusCode, res) => {
       token,
     });
 };
+
+/*  ANCHOR
+@desc   Update user details
+@route  PUT /api/v1/auth/updatedetails
+@access Private
+*/
+exports.updateDetails = asyncHandler(
+  async (req, res, next) => {
+    const fieldsToUpdate = {
+      name: req.body.name,
+      email: req.body.email,
+    };
+    const user = await User.findByIdAndUpdate(
+      req.user.id,
+      fieldsToUpdate,
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  }
+);
+
+/*  ANCHOR
+@desc   Update password
+@route  PUT /api/v1/auth/udpatepassword
+@access Private
+*/
+exports.updatePassword = asyncHandler(
+  async (req, res, next) => {
+    const user = await User.findById(req.user.id).select(
+      "+password"
+    );
+
+    // check current password
+    if (
+      !(await user.matchPassword(req.body.currentPassword))
+    ) {
+      return next(
+        new ErrorResponse("Invalid Credentials", 401)
+      );
+    }
+
+    user.password = req.body.newPassword;
+    await user.save();
+
+    sendTokenResponse(user, 200, res);
+  }
+);
