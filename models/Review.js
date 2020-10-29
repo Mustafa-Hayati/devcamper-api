@@ -15,10 +15,7 @@ const ReviewSchema = new mongoose.Schema({
     type: Number,
     min: 1,
     max: 10,
-    required: [
-      true,
-      "Please add a rating between 1 and 10",
-    ],
+    required: [true, "Please add a rating between 1 and 10"],
   },
   createdAt: {
     type: Date,
@@ -37,15 +34,10 @@ const ReviewSchema = new mongoose.Schema({
 });
 
 // Prevent user from submitting more than one review per bootcamp
-ReviewSchema.index(
-  { bootcamp: 1, user: 1 },
-  { unique: true }
-);
+ReviewSchema.index({ bootcamp: 1, user: 1 }, { unique: true });
 
 // Static method to get avg rating and save
-ReviewSchema.statics.getAverageRating = async function (
-  bootcampId
-) {
+ReviewSchema.statics.getAverageRating = async function (bootcampId) {
   const obj = await this.aggregate([
     {
       $match: { bootcamp: bootcampId },
@@ -59,14 +51,11 @@ ReviewSchema.statics.getAverageRating = async function (
   ]);
 
   try {
-    await this.model("Bootcamp").findByIdAndUpdate(
-      bootcampId,
-      {
-        averageRating: obj[0].averageRating,
-      }
-    );
+    await this.model("Bootcamp").findByIdAndUpdate(bootcampId, {
+      averageRating: obj[0].averageRating,
+    });
   } catch (err) {
-    console.error(err);
+    console.error(`❌`, err);
   }
 };
 
